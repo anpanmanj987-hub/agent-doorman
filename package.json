@@ -1,0 +1,68 @@
+{
+  "name": "agent-doorman",
+  "version": "0.1.0",
+  "description": "Check AI agents at the door. Audit how your site treats agent traffic, verify Web Bot Auth signatures, and enforce per-path agent policies. Zero runtime dependencies.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "anpanmanj987-hub",
+  "homepage": "https://github.com/anpanmanj987-hub/agent-doorman#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anpanmanj987-hub/agent-doorman.git"
+  },
+  "bugs": {
+    "url": "https://github.com/anpanmanj987-hub/agent-doorman/issues"
+  },
+  "keywords": [
+    "ai-agents",
+    "web-bot-auth",
+    "http-message-signatures",
+    "rfc9421",
+    "bot-management",
+    "agentic-commerce",
+    "middleware",
+    "audit",
+    "cli"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "agent-doorman": "dist/cli/main.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "default": "./dist/node.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "skills",
+    "README.md",
+    "README.ja.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && chmod +x dist/cli/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --import tsx --test test/*.test.ts",
+    "check:placeholders": "node scripts/check-placeholders.mjs",
+    "prepublishOnly": "npm run typecheck && npm run build && npm test && npm run check:placeholders",
+    "demo": "node --import tsx scripts/demo.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "mode": "monitor",
+  "rules": [
+    {
+      "name": "account",
+      "description": "Sign-in, sign-up and account pages",
+      "match": {
+        "paths": [
+          "/login",
+          "/signin",
+          "/signup",
+          "/register",
+          "/account/**",
+          "/password/**"
+        ]
+      },
+      "allow": [
+        "browser",
+        "verified"
+      ],
+      "rateLimit": {
+        "verified": "30/min"
+      },
+      "onDeny": "challenge"
+    },
+    {
+      "name": "checkout",
+      "description": "Checkout and payment",
+      "match": {
+        "paths": [
+          "/checkout/**",
+          "/cart/checkout/**",
+          "/payment/**",
+          "/pay/**"
+        ]
+      },
+      "allow": [
+        "browser",
+        "verified"
+      ],
+      "rateLimit": {
+        "verified": "30/min"
+      },
+      "onDeny": "challenge"
+    },
+    {
+      "name": "cart",
+      "description": "Changes to the cart",
+      "match": {
+        "paths": [
+          "/cart/**",
+          "/basket/**"
+        ],
+        "methods": [
+          "POST",
+          "PUT",
+          "PATCH",
+          "DELETE"
+        ]
+      },
+      "allow": [
+        "browser",
+        "verified"
+      ],
+      "rateLimit": {
+        "verified": "120/min"
+      },
+      "onDeny": "challenge"
+    },
+    {
+      "name": "api",
+      "description": "JSON APIs",
+      "match": {
+        "paths": [
+          "/api/**"
+        ]
+      },
+      "allow": [
+        "browser",
+        "verified",
+        "automated"
+      ],
+      "rateLimit": {
+        "automated": "60/min",
+        "verified": "300/min"
+      },
+      "onDeny": "challenge"
+    },
+    {
+      "name": "browse",
+      "description": "Reading pages",
+      "match": {
+        "methods": [
+          "GET",
+          "HEAD"
+        ],
+        "paths": [
+          "/**"
+        ]
+      },
+      "allow": [
+        "browser",
+        "verified",
+        "claimed",
+        "automated",
+        "unverified"
+      ],
+      "rateLimit": {
+        "claimed": "120/min",
+        "automated": "60/min",
+        "unverified": "60/min"
+      }
+    }
+  ],
+  "default": {
+    "allow": [
+      "browser",
+      "verified"
+    ],
+    "onDeny": "challenge"
+  }
+}

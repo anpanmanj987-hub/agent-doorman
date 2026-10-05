@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Door report for naive-shop.example</title>
+<style>
+:root{--ink:#1c2541;--brass:#b5893b;--paper:#f6f7f9;--surface:#ffffff;--text:#2e3442;--muted:#646b7d;--rule:#d9dde5;--pass:#2b7a57;--warn:#9a5f00;--fail:#b42318;}
+@media (prefers-color-scheme:dark){:root{--ink:#e4e9f5;--brass:#d4a957;--paper:#121726;--surface:#1a2133;--text:#d6dcea;--muted:#9aa3b8;--rule:#2c3550;--pass:#5cc497;--warn:#e0a640;--fail:#f07a6e;}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--text);font:16px/1.55 ui-sans-serif,"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;font-variant-numeric:tabular-nums}
+main{max-width:880px;margin:0 auto;padding:48px 24px 72px}
+a{color:inherit}
+code{font-size:.92em;background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:1px 5px}
+.plaque{display:inline-block;border:3px double var(--brass);padding:14px 22px 12px;margin:0 0 28px;background:var(--surface)}
+.plaque h1{margin:0;font-size:clamp(1.9rem,5vw,3rem);line-height:1.05;letter-spacing:-.02em;color:var(--ink);font-weight:700;word-break:break-word}
+.plaque p{margin:6px 0 0;color:var(--muted);font-size:.95rem}
+.verdict{font-size:1.35rem;line-height:1.35;margin:0 0 8px;color:var(--ink);max-width:36ch}
+.verdict b{color:var(--fail)}
+.meta{color:var(--muted);font-size:.9rem;margin:0 0 40px}
+h2{font-size:1.25rem;color:var(--ink);margin:48px 0 8px}
+h3{font-size:1.05rem;color:var(--ink);margin:0}
+.lede{margin:0 0 16px;max-width:68ch;color:var(--muted)}
+table.door{border-collapse:collapse;width:100%;background:var(--surface);border:1px solid var(--rule)}
+.door th,.door td{text-align:left;padding:9px 12px;border-top:1px solid var(--rule);vertical-align:top}
+.door thead th{border-top:0;font-weight:600;color:var(--muted);font-size:.9rem}
+.door tr.group th{color:var(--ink);font-weight:700;background:var(--paper);border-top:2px solid var(--rule);padding-top:12px}
+.door .num{text-align:right;width:4em}
+.outcome{color:var(--ink)}
+.concern{display:block;font-size:.9rem;font-weight:600;margin-top:2px}
+.concern.fail{color:var(--fail)}.concern.warn{color:var(--warn)}
+.door tr.flag-fail td:first-child{box-shadow:inset 3px 0 0 var(--fail)}
+.door tr.flag-warn td:first-child{box-shadow:inset 3px 0 0 var(--warn)}
+.fixes{padding-left:1.4em;margin:0;max-width:72ch}
+.fixes li{margin:0 0 10px}
+.cat{margin:28px 0 0;padding-top:20px;border-top:2px solid var(--ink)}
+.cat-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+.cat-score{font-weight:700;color:var(--ink);font-size:1.1rem}
+.cat-score small{font-weight:400;color:var(--muted)}
+.checks{list-style:none;margin:12px 0 0;padding:0}
+.check{display:grid;grid-template-columns:1.8em 1fr;gap:4px 10px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.check:last-child{border-bottom:0}
+.mark{font-weight:700;text-align:center;line-height:1.55}
+.check.pass .mark{color:var(--pass)}.check.warn .mark{color:var(--warn)}.check.fail .mark{color:var(--fail)}.check.skip .mark,.check.info .mark{color:var(--muted)}
+.ct{margin:0;font-weight:600;color:var(--ink)}
+.cs{margin:2px 0 0;max-width:72ch}
+details{margin-top:6px;color:var(--muted);font-size:.93rem}
+summary{cursor:pointer}
+summary:focus-visible,a:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+footer{margin-top:56px;color:var(--muted);font-size:.9rem;max-width:72ch}
+footer p{margin:0 0 8px}
+@media (max-width:560px){main{padding:28px 16px 48px}.plaque{padding:10px 14px}.door th,.door td{padding:8px 8px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="plaque"><h1>naive-shop.example</h1><p>Door report</p></div>
+  <p class="verdict">Not ready for AI agents. Score <b>32</b> of 100.</p>
+  <p class="meta">Active audit with door test, Mon, 05 Oct 2026 13:38:12 GMT.</p>
+</header>
+<section aria-labelledby="door-h">
+  <h2 id="door-h">Who got in</h2>
+  <p class="lede">The same page, requested by different kinds of visitor. Claims without proof should not get further than a script, and a fake signature should never help. Problems are marked.</p>
+  <table class="door">
+    <thead><tr><th scope="col">Visitor</th><th scope="col" class="num">HTTP</th><th scope="col">Outcome</th></tr></thead>
+    <tbody><tr class="group"><th scope="rowgroup" colspan="3">/</th></tr>
+<tr class=""><td>Browser</td><td class="num">200</td><td><span class="outcome">admitted</span></td></tr>
+<tr class="flag-warn"><td>Script (python-requests)</td><td class="num">403</td><td><span class="outcome">turned away</span><span class="concern warn"><span aria-hidden="true">!</span> refused with no reason an agent can read</span></td></tr>
+<tr class="flag-fail"><td>Claims GPTBot, no proof</td><td class="num">200</td><td><span class="outcome">admitted</span><span class="concern fail"><span aria-hidden="true">✕</span> got in on a claim alone</span></td></tr>
+<tr class="flag-fail"><td>Claims ClaudeBot, no proof</td><td class="num">200</td><td><span class="outcome">admitted</span><span class="concern fail"><span aria-hidden="true">✕</span> got in on a claim alone</span></td></tr>
+<tr class="flag-fail"><td>Claims PerplexityBot, no proof</td><td class="num">200</td><td><span class="outcome">admitted</span><span class="concern fail"><span aria-hidden="true">✕</span> got in on a claim alone</span></td></tr>
+<tr class="flag-fail"><td>Claims ChatGPT-User, no proof</td><td class="num">200</td><td><span class="outcome">admitted</span><span class="concern fail"><span aria-hidden="true">✕</span> got in on a claim alone</span></td></tr>
+<tr class="flag-fail"><td>Claims meta-externalagent, no proof</td><td class="num">200</td><td><span class="outcome">admitted</span><span class="concern fail"><span aria-hidden="true">✕</span> got in on a claim alone</span></td></tr>
+<tr class=""><td>Claims GPTBot, fake signature</td><td class="num">200</td><td><span class="outcome">admitted</span></td></tr></tbody>
+<tbody><tr class="group"><th scope="rowgroup" colspan="3">/signup</th></tr>
+<tr class=""><td>Browser</td><td class="num">200</td><td><span class="outcome">admitted</span></td></tr>
+<tr class="flag-warn"><td>Script (python-requests)</td><td class="num">403</td><td><span class="outcome">turned away</span><span class="concern warn"><span aria-hidden="true">!</span> refused with no reason an agent can read</span></td></tr>
+<tr class="flag-fail"><td>Claims GPTBot, no proof</td><td class="num">200</td><td><span class="outcome">admitted</span><span class="concern fail"><span aria-hidden="true">✕</span> got in on a claim alone</span></td></tr>
+<tr class="flag-fail"><td>Claims ClaudeBot, no proof</td><td class="num">200</td><td><span class="outcome">admitted</span><span class="concern fail"><span aria-hidden="true">✕</span> got in on a claim alone</span></td></tr>
+<tr class=""><td>Claims GPTBot, fake signature</td><td class="num">200</td><td><span class="outcome">admitted</span></td></tr></tbody>
+  </table>
+</section>
+<section aria-labelledby="fix-h">
+  <h2 id="fix-h">Fix first</h2>
+  <ol class="fixes"><li><strong>Agent claims are not trusted blindly.</strong> Stop allowlisting by User-Agent. Admit named agents only when their Web Bot Auth signature verifies (agent-doorman verifies signatures; many CDNs can too).</li><li><strong>Content without JavaScript.</strong> Server-render (or pre-render) key content. Agents that fetch HTML without running scripts see an empty shell.</li><li><strong>Every field has a label.</strong> Use &lt;label for&gt;, a wrapping &lt;label&gt; or aria-label. Placeholders vanish when typing and many agents ignore them.</li><li><strong>Fields say what they are.</strong> Add autocomplete tokens (email, tel, given-name, street-address, postal-code, cc-number, current-password...). They tell agents and password managers exactly what each field wants.</li><li><strong>Buttons are named.</strong> Give icon-only buttons an aria-label that says what they do (&quot;Add to cart&quot;, not &quot;button&quot;).</li></ol>
+</section>
+<section aria-labelledby="checks-h">
+<h2 id="checks-h">All checks</h2>
+<section class="cat" aria-labelledby="cat-identity">
+  <div class="cat-head"><h3 id="cat-identity">Who gets in</h3><span class="cat-score">25<small>/100</small></span></div>
+  <ul class="checks"><li class="check fail">
+    <span class="mark" aria-hidden="true">✕</span>
+    <div><p class="ct"><span class="sr">Fail: </span>Agent claims are not trusted blindly</p><p class="cs">Your bot protection lets in anyone who claims to be a known AI agent.</p><details><summary>Details</summary><ul><li>/: &quot;Claims GPTBot, no proof&quot; got in while a plain script was refused</li><li>/: &quot;Claims ClaudeBot, no proof&quot; got in while a plain script was refused</li><li>/: &quot;Claims PerplexityBot, no proof&quot; got in while a plain script was refused</li><li>/: &quot;Claims ChatGPT-User, no proof&quot; got in while a plain script was refused</li><li>/: &quot;Claims meta-externalagent, no proof&quot; got in while a plain script was refused</li><li>/signup: &quot;Claims GPTBot, no proof&quot; got in while a plain script was refused</li><li>/signup: &quot;Claims ClaudeBot, no proof&quot; got in while a plain script was refused</li></ul></details></div>
+  </li><li class="check warn">
+    <span class="mark" aria-hidden="true">!</span>
+    <div><p class="ct"><span class="sr">Needs work: </span>Fake signatures buy nothing</p><p class="cs">No signature checking observed: a fake signature was treated like any other visit.</p></div>
+  </li><li class="check warn">
+    <span class="mark" aria-hidden="true">!</span>
+    <div><p class="ct"><span class="sr">Needs work: </span>Transactional pages need proof</p><p class="cs">Unverified agent claims reach the extra pages you listed.</p><details><summary>Details</summary><ul><li>/signup: &quot;Claims GPTBot, no proof&quot; admitted</li><li>/signup: &quot;Claims ClaudeBot, no proof&quot; admitted</li></ul></details></div>
+  </li><li class="check fail">
+    <span class="mark" aria-hidden="true">✕</span>
+    <div><p class="ct"><span class="sr">Fail: </span>Refusals explain themselves</p><p class="cs">Only 0/2 refusals told the agent why or how to get in.</p></div>
+  </li><li class="check skip">
+    <span class="mark" aria-hidden="true">–</span>
+    <div><p class="ct"><span class="sr">Not tested: </span>Verified agents get in</p><p class="cs">Not tested. Pass --sign-key (and --signature-agent) to check that a signed agent is admitted.</p></div>
+  </li></ul>
+</section>
+<section class="cat" aria-labelledby="cat-discovery">
+  <div class="cat-head"><h3 id="cat-discovery">Can agents find your rules</h3><span class="cat-score">50<small>/100</small></span></div>
+  <ul class="checks"><li class="check warn">
+    <span class="mark" aria-hidden="true">!</span>
+    <div><p class="ct"><span class="sr">Needs work: </span>robots.txt states an agent policy</p><p class="cs">No robots.txt found.</p></div>
+  </li><li class="check warn">
+    <span class="mark" aria-hidden="true">!</span>
+    <div><p class="ct"><span class="sr">Needs work: </span>Pages are discoverable</p><p class="cs">No sitemap found.</p></div>
+  </li><li class="check warn">
+    <span class="mark" aria-hidden="true">!</span>
+    <div><p class="ct"><span class="sr">Needs work: </span>llms.txt summary</p><p class="cs">No /llms.txt.</p></div>
+  </li><li class="check info">
+    <span class="mark" aria-hidden="true">i</span>
+    <div><p class="ct"><span class="sr">Note: </span>Published agent policy</p><p class="cs">No /.well-known/agent-policy.json (optional, experimental format served by agent-doorman).</p></div>
+  </li></ul>
+</section>
+<section class="cat" aria-labelledby="cat-readability">
+  <div class="cat-head"><h3 id="cat-readability">Can agents read your pages</h3><span class="cat-score">29<small>/100</small></span></div>
+  <ul class="checks"><li class="check warn">
+    <span class="mark" aria-hidden="true">!</span>
+    <div><p class="ct"><span class="sr">Needs work: </span>Language is declared</p><p class="cs">2 page(s) lack &lt;html lang&gt;.</p><details><summary>Details</summary><ul><li>/</li><li>/signup</li></ul></details></div>
+  </li><li class="check warn">
+    <span class="mark" aria-hidden="true">!</span>
+    <div><p class="ct"><span class="sr">Needs work: </span>Title and description</p><p class="cs">2 page(s) miss a title or meta description.</p><details><summary>Details</summary><ul><li>/</li><li>/signup</li></ul></details></div>
+  </li><li class="check warn">
+    <span class="mark" aria-hidden="true">!</span>
+    <div><p class="ct"><span class="sr">Needs work: </span>Structured data</p><p class="cs">No JSON-LD found on audited pages.</p></div>
+  </li><li class="check fail">
+    <span class="mark" aria-hidden="true">✕</span>
+    <div><p class="ct"><span class="sr">Fail: </span>Content without JavaScript</p><p class="cs">2 page(s) show little or no text before JavaScript runs.</p><details><summary>Details</summary><ul><li>/: 0 characters, asks to enable JavaScript</li><li>/signup: 14 characters</li></ul></details></div>
+  </li></ul>
+</section>
+<section class="cat" aria-labelledby="cat-forms">
+  <div class="cat-head"><h3 id="cat-forms">Can agents fill in your forms</h3><span class="cat-score">6<small>/100</small></span></div>
+  <ul class="checks"><li class="check fail">
+    <span class="mark" aria-hidden="true">✕</span>
+    <div><p class="ct"><span class="sr">Fail: </span>Every field has a label</p><p class="cs">0/4 fields have a label or accessible name.</p><details><summary>Details</summary><ul><li>Placeholder only: email, phone, first_name</li></ul></details></div>
+  </li><li class="check fail">
+    <span class="mark" aria-hidden="true">✕</span>
+    <div><p class="ct"><span class="sr">Fail: </span>Fields say what they are</p><p class="cs">0/4 identity, contact, address and payment fields carry an autocomplete token.</p><details><summary>Details</summary><ul><li>email (email)</li><li>phone (tel)</li><li>first_name (name)</li><li>password (password, autocomplete=&quot;off&quot;)</li></ul></details></div>
+  </li><li class="check fail">
+    <span class="mark" aria-hidden="true">✕</span>
+    <div><p class="ct"><span class="sr">Fail: </span>Buttons are named</p><p class="cs">0/1 buttons have a text or accessible name.</p></div>
+  </li><li class="check warn">
+    <span class="mark" aria-hidden="true">!</span>
+    <div><p class="ct"><span class="sr">Needs work: </span>Inputs use specific types</p><p class="cs">0/2 email/phone fields use type=&quot;email&quot;/&quot;tel&quot;.</p><details><summary>Details</summary><ul><li>email is type=&quot;text&quot;</li><li>phone is type=&quot;text&quot;</li></ul></details></div>
+  </li></ul>
+</section>
+<section class="cat" aria-labelledby="cat-walls">
+  <div class="cat-head"><h3 id="cat-walls">Walls in the way</h3><span class="cat-score">88<small>/100</small></span></div>
+  <ul class="checks"><li class="check pass">
+    <span class="mark" aria-hidden="true">✓</span>
+    <div><p class="ct"><span class="sr">Pass: </span>Browser-like visits get through</p><p class="cs">Plain browser requests reached every audited page.</p></div>
+  </li><li class="check warn">
+    <span class="mark" aria-hidden="true">!</span>
+    <div><p class="ct"><span class="sr">Needs work: </span>No CAPTCHA in the way</p><p class="cs">Challenge technology found on audited pages: reCAPTCHA.</p></div>
+  </li></ul>
+</section>
+</section>
+<footer>
+<p>Agents that present themselves as an ordinary browser and do not sign requests look like people. Neither this audit nor User-Agent rules can tell them apart; signatures are what make agents distinguishable.</p>
+<p>Pages were read as raw HTML without running JavaScript.</p>
+<p>Generated by agent-doorman 0.1.0.</p>
+</footer>
+</main>
+</body>
+</html>

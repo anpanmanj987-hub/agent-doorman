@@ -1,0 +1,67 @@
+name: agent-doorman audit
+description: Audit how a site treats AI agents (claimed, forged and verified) and how easy it is for agents to use.
+author: anpanmanj987-hub
+branding:
+  icon: shield
+  color: blue
+
+inputs:
+  url:
+    description: Site to audit, e.g. https://staging.example.com
+    required: true
+  paths:
+    description: Extra paths to audit, separated by spaces, e.g. "/cart /checkout /signup"
+    default: ""
+  active:
+    description: Run the door test (sends requests that claim to be AI agents). Only for sites you operate.
+    default: "false"
+  fail-under:
+    description: Fail the step when the score is below this number (0 disables)
+    default: "0"
+
+outputs:
+  score:
+    description: Score from 0 to 100
+    value: ${{ steps.audit.outputs.score }}
+  verdict:
+    description: ready, partly-ready or not-ready
+    value: ${{ steps.audit.outputs.verdict }}
+  report:
+    description: Path of the JSON report
+    value: ${{ steps.audit.outputs.report }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+    - shell: bash
+      env:
+        ACTION_ROOT: ${{ github.action_path }}
+      run: |
+        npm ci --prefix "$ACTION_ROOT"
+        npm run build --prefix "$ACTION_ROOT"
+    - id: audit
+      shell: bash
+      env:
+        URL: ${{ inputs.url }}
+        PATHS: ${{ inputs.paths }}
+        ACTIVE: ${{ inputs.active }}
+        FAIL_UNDER: ${{ inputs.fail-under }}
+        ACTION_ROOT: ${{ github.action_path }}
+      run: |
+        set -uo pipefail
+        report="$RUNNER_TEMP/agent-doorman.json"
+        args=(audit "$URL" --json "$report" --html "$RUNNER_TEMP/agent-doorman.html" --markdown "$GITHUB_STEP_SUMMARY" --no-color)
+        for p in $PATHS; do args+=(--path "$p"); done
+        if [ "$ACTIVE" = "true" ]; then args+=(--active); fi
+        if [ "$FAIL_UNDER" != "0" ]; then args+=(--fail-under "$FAIL_UNDER"); fi
+        node "$ACTION_ROOT/dist/cli/main.js" "${args[@]}"
+        status=$?
+        if [ -f "$report" ]; then
+          echo "score=$(node -p "require('$report').score")" >> "$GITHUB_OUTPUT"
+          echo "verdict=$(node -p "require('$report').verdict")" >> "$GITHUB_OUTPUT"
+          echo "report=$report" >> "$GITHUB_OUTPUT"
+        fi
+        exit $status

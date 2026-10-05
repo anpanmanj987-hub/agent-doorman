@@ -1,0 +1,9 @@
+agent-doorman
+Copyright 2026 anpanmanj987-hub
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+The test suite contains test vectors and an example key taken from IETF documents
+(draft-meunier-webbotauth-httpsig-protocol-00 and RFC 9421). They are not part of the
+published npm package and are used under the Revised BSD License; see
+test/fixtures/IETF-LICENSE.txt.

@@ -1,0 +1,380 @@
+{
+  "tool": {
+    "name": "agent-doorman",
+    "version": "0.1.0"
+  },
+  "target": "https://plaque-shop.example/",
+  "auditedAt": "2026-10-05T13:38:12.664Z",
+  "mode": "active",
+  "score": 100,
+  "verdict": "ready",
+  "categories": [
+    {
+      "id": "identity",
+      "title": "Who gets in",
+      "weight": 35,
+      "score": 100,
+      "checks": [
+        {
+          "id": "ua-allowlist",
+          "title": "Agent claims are not trusted blindly",
+          "weight": 3,
+          "status": "pass",
+          "summary": "Requests that only claim to be AI agents get the same treatment as other scripts.",
+          "details": []
+        },
+        {
+          "id": "forged-signature",
+          "title": "Fake signatures buy nothing",
+          "weight": 2,
+          "status": "pass",
+          "summary": "A fake signature got no more access than an unsigned claim, and was refused where it mattered.",
+          "details": []
+        },
+        {
+          "id": "sensitive-paths",
+          "title": "Transactional pages need proof",
+          "weight": 2,
+          "status": "pass",
+          "summary": "Unverified agent claims are refused on the extra pages you listed.",
+          "details": []
+        },
+        {
+          "id": "readable-refusals",
+          "title": "Refusals explain themselves",
+          "weight": 1,
+          "status": "pass",
+          "summary": "Refused agents get a machine-readable reason (JSON, Accept-Signature or Retry-After).",
+          "details": []
+        },
+        {
+          "id": "verified-admitted",
+          "title": "Verified agents get in",
+          "weight": 2,
+          "status": "pass",
+          "summary": "Requests signed with your key were admitted.",
+          "details": []
+        }
+      ]
+    },
+    {
+      "id": "discovery",
+      "title": "Can agents find your rules",
+      "weight": 15,
+      "score": 100,
+      "checks": [
+        {
+          "id": "robots",
+          "title": "robots.txt states an agent policy",
+          "weight": 2,
+          "status": "pass",
+          "summary": "robots.txt has explicit groups for 1 AI agent token(s).",
+          "details": [
+            "GPTBot"
+          ]
+        },
+        {
+          "id": "sitemap",
+          "title": "Pages are discoverable",
+          "weight": 1,
+          "status": "pass",
+          "summary": "robots.txt declares a sitemap.",
+          "details": []
+        },
+        {
+          "id": "llms-txt",
+          "title": "llms.txt summary",
+          "weight": 1,
+          "status": "pass",
+          "summary": "Found /llms.txt.",
+          "details": []
+        },
+        {
+          "id": "agent-policy",
+          "title": "Published agent policy",
+          "weight": 0,
+          "status": "info",
+          "summary": "Found /.well-known/agent-policy.json.",
+          "details": []
+        }
+      ]
+    },
+    {
+      "id": "readability",
+      "title": "Can agents read your pages",
+      "weight": 20,
+      "score": 100,
+      "checks": [
+        {
+          "id": "lang",
+          "title": "Language is declared",
+          "weight": 1,
+          "status": "pass",
+          "summary": "Every audited page declares its language.",
+          "details": []
+        },
+        {
+          "id": "title-description",
+          "title": "Title and description",
+          "weight": 1,
+          "status": "pass",
+          "summary": "Every audited page has a title and description.",
+          "details": []
+        },
+        {
+          "id": "structured-data",
+          "title": "Structured data",
+          "weight": 2,
+          "status": "pass",
+          "summary": "JSON-LD present: Product.",
+          "details": []
+        },
+        {
+          "id": "server-rendered",
+          "title": "Content without JavaScript",
+          "weight": 3,
+          "status": "pass",
+          "summary": "Audited pages carry readable text in the HTML itself.",
+          "details": []
+        }
+      ]
+    },
+    {
+      "id": "forms",
+      "title": "Can agents fill in your forms",
+      "weight": 20,
+      "score": 100,
+      "checks": [
+        {
+          "id": "labels",
+          "title": "Every field has a label",
+          "weight": 3,
+          "status": "pass",
+          "summary": "6/6 fields have a label or accessible name.",
+          "details": []
+        },
+        {
+          "id": "autocomplete",
+          "title": "Fields say what they are",
+          "weight": 3,
+          "status": "pass",
+          "summary": "6/6 identity, contact, address and payment fields carry an autocomplete token.",
+          "details": []
+        },
+        {
+          "id": "buttons",
+          "title": "Buttons are named",
+          "weight": 2,
+          "status": "pass",
+          "summary": "1/1 buttons have a text or accessible name.",
+          "details": []
+        },
+        {
+          "id": "input-types",
+          "title": "Inputs use specific types",
+          "weight": 1,
+          "status": "pass",
+          "summary": "2/2 email/phone fields use type=\"email\"/\"tel\".",
+          "details": []
+        }
+      ]
+    },
+    {
+      "id": "walls",
+      "title": "Walls in the way",
+      "weight": 10,
+      "score": 100,
+      "checks": [
+        {
+          "id": "browser-reachable",
+          "title": "Browser-like visits get through",
+          "weight": 3,
+          "status": "pass",
+          "summary": "Plain browser requests reached every audited page.",
+          "details": []
+        },
+        {
+          "id": "captcha",
+          "title": "No CAPTCHA in the way",
+          "weight": 1,
+          "status": "pass",
+          "summary": "No CAPTCHA or bot-challenge widgets detected in the audited HTML.",
+          "details": []
+        }
+      ]
+    }
+  ],
+  "probes": [
+    {
+      "path": "/",
+      "visitor": "browser",
+      "label": "Browser",
+      "status": 200,
+      "ms": 2,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false
+    },
+    {
+      "path": "/",
+      "visitor": "script",
+      "label": "Script (python-requests)",
+      "status": 200,
+      "ms": 2,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false
+    },
+    {
+      "path": "/",
+      "visitor": "claimed",
+      "label": "Claims GPTBot, no proof",
+      "status": 200,
+      "ms": 2,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false
+    },
+    {
+      "path": "/",
+      "visitor": "claimed",
+      "label": "Claims ClaudeBot, no proof",
+      "status": 200,
+      "ms": 2,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false
+    },
+    {
+      "path": "/",
+      "visitor": "claimed",
+      "label": "Claims PerplexityBot, no proof",
+      "status": 200,
+      "ms": 2,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false
+    },
+    {
+      "path": "/",
+      "visitor": "claimed",
+      "label": "Claims ChatGPT-User, no proof",
+      "status": 200,
+      "ms": 2,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false
+    },
+    {
+      "path": "/",
+      "visitor": "claimed",
+      "label": "Claims meta-externalagent, no proof",
+      "status": 200,
+      "ms": 1,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false
+    },
+    {
+      "path": "/",
+      "visitor": "forged",
+      "label": "Claims GPTBot, fake signature",
+      "status": 200,
+      "ms": 2,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false
+    },
+    {
+      "path": "/",
+      "visitor": "verified",
+      "label": "Verified agent (your key)",
+      "status": 200,
+      "ms": 3,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false
+    },
+    {
+      "path": "/checkout",
+      "visitor": "browser",
+      "label": "Browser",
+      "status": 200,
+      "ms": 1,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false
+    },
+    {
+      "path": "/checkout",
+      "visitor": "script",
+      "label": "Script (python-requests)",
+      "status": 403,
+      "ms": 2,
+      "verdict": "challenged",
+      "machineReadable": true,
+      "acceptSignature": true
+    },
+    {
+      "path": "/checkout",
+      "visitor": "claimed",
+      "label": "Claims GPTBot, no proof",
+      "status": 403,
+      "ms": 2,
+      "verdict": "challenged",
+      "machineReadable": true,
+      "acceptSignature": true
+    },
+    {
+      "path": "/checkout",
+      "visitor": "claimed",
+      "label": "Claims ClaudeBot, no proof",
+      "status": 403,
+      "ms": 2,
+      "verdict": "challenged",
+      "machineReadable": true,
+      "acceptSignature": true
+    },
+    {
+      "path": "/checkout",
+      "visitor": "forged",
+      "label": "Claims GPTBot, fake signature",
+      "status": 403,
+      "ms": 2,
+      "verdict": "challenged",
+      "machineReadable": true,
+      "acceptSignature": true
+    },
+    {
+      "path": "/checkout",
+      "visitor": "verified",
+      "label": "Verified agent (your key)",
+      "status": 200,
+      "ms": 2,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false
+    }
+  ],
+  "pages": [
+    {
+      "url": "https://plaque-shop.example/",
+      "status": 200,
+      "textLength": 397,
+      "forms": 0,
+      "fields": 0
+    },
+    {
+      "url": "https://plaque-shop.example/checkout",
+      "status": 200,
+      "textLength": 446,
+      "forms": 1,
+      "fields": 6
+    }
+  ],
+  "fixes": [],
+  "notes": [
+    "Agents that present themselves as an ordinary browser and do not sign requests look like people. Neither this audit nor User-Agent rules can tell them apart; signatures are what make agents distinguishable.",
+    "Pages were read as raw HTML without running JavaScript."
+  ]
+}

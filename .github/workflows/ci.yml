@@ -1,0 +1,91 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm run check:placeholders
+
+  package:
+    name: package smoke (tarball, examples, workerd, TS consumers)
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm pack
+      - run: scripts/ci/package-smoke.sh agent-doorman-*.tgz
+
+  demo:
+    name: demo audit (naive vs guarded)
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run demo
+      - run: cat docs/examples/naive-report.md docs/examples/guarded-report.md >> "$GITHUB_STEP_SUMMARY"
+
+  action:
+    name: GitHub Action smoke (source build and loopback audit)
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci && npm run build
+      - name: Start example server
+        run: |
+          DOORMAN_MODE=enforce PORT=3101 node examples/node-http/server.mjs > "$RUNNER_TEMP/doorman-server.log" 2>&1 &
+          for attempt in $(seq 1 50); do
+            if curl -fsS http://127.0.0.1:3101/ > /dev/null; then exit 0; fi
+            sleep 0.2
+          done
+          cat "$RUNNER_TEMP/doorman-server.log"
+          exit 1
+      - uses: ./
+        id: audit
+        with:
+          url: http://127.0.0.1:3101
+          active: "true"
+          paths: /checkout
+      - name: Verify report outputs
+        env:
+          REPORT: ${{ steps.audit.outputs.report }}
+          SCORE: ${{ steps.audit.outputs.score }}
+          VERDICT: ${{ steps.audit.outputs.verdict }}
+        run: |
+          node --input-type=module -e 'import {readFileSync} from "node:fs"; import assert from "node:assert/strict"; const r = JSON.parse(readFileSync(process.env.REPORT, "utf8")); assert.equal(String(r.score), process.env.SCORE); assert.equal(r.verdict, process.env.VERDICT); assert.ok(Number.isFinite(r.score));'

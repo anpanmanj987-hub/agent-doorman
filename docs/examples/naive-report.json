@@ -1,0 +1,553 @@
+{
+  "tool": {
+    "name": "agent-doorman",
+    "version": "0.1.0"
+  },
+  "target": "https://naive-shop.example/",
+  "auditedAt": "2026-10-05T13:38:12.613Z",
+  "mode": "active",
+  "score": 32,
+  "verdict": "not-ready",
+  "categories": [
+    {
+      "id": "identity",
+      "title": "Who gets in",
+      "weight": 35,
+      "score": 25,
+      "checks": [
+        {
+          "id": "ua-allowlist",
+          "title": "Agent claims are not trusted blindly",
+          "weight": 3,
+          "status": "fail",
+          "summary": "Your bot protection lets in anyone who claims to be a known AI agent.",
+          "details": [
+            "/: \"Claims GPTBot, no proof\" got in while a plain script was refused",
+            "/: \"Claims ClaudeBot, no proof\" got in while a plain script was refused",
+            "/: \"Claims PerplexityBot, no proof\" got in while a plain script was refused",
+            "/: \"Claims ChatGPT-User, no proof\" got in while a plain script was refused",
+            "/: \"Claims meta-externalagent, no proof\" got in while a plain script was refused",
+            "/signup: \"Claims GPTBot, no proof\" got in while a plain script was refused",
+            "/signup: \"Claims ClaudeBot, no proof\" got in while a plain script was refused"
+          ],
+          "fix": "Stop allowlisting by User-Agent. Admit named agents only when their Web Bot Auth signature verifies (agent-doorman verifies signatures; many CDNs can too)."
+        },
+        {
+          "id": "forged-signature",
+          "title": "Fake signatures buy nothing",
+          "weight": 2,
+          "status": "warn",
+          "summary": "No signature checking observed: a fake signature was treated like any other visit.",
+          "details": [],
+          "fix": "Verify Web Bot Auth signatures so you can tell real agents from impostors, and require verification on transactional paths."
+        },
+        {
+          "id": "sensitive-paths",
+          "title": "Transactional pages need proof",
+          "weight": 2,
+          "status": "warn",
+          "summary": "Unverified agent claims reach the extra pages you listed.",
+          "details": [
+            "/signup: \"Claims GPTBot, no proof\" admitted",
+            "/signup: \"Claims ClaudeBot, no proof\" admitted"
+          ],
+          "fix": "Require a browser or a verified agent on cart, checkout and account paths (see the ecommerce preset). The audit only sends GET requests, so this is a signal, not proof that actions are possible."
+        },
+        {
+          "id": "readable-refusals",
+          "title": "Refusals explain themselves",
+          "weight": 1,
+          "status": "fail",
+          "summary": "Only 0/2 refusals told the agent why or how to get in.",
+          "details": [],
+          "fix": "Answer refused agents with a JSON body and an Accept-Signature header (Web Bot Auth §4.3) or Retry-After, not an HTML wall."
+        },
+        {
+          "id": "verified-admitted",
+          "title": "Verified agents get in",
+          "weight": 0,
+          "status": "skip",
+          "summary": "Not tested. Pass --sign-key (and --signature-agent) to check that a signed agent is admitted.",
+          "details": []
+        }
+      ]
+    },
+    {
+      "id": "discovery",
+      "title": "Can agents find your rules",
+      "weight": 15,
+      "score": 50,
+      "checks": [
+        {
+          "id": "robots",
+          "title": "robots.txt states an agent policy",
+          "weight": 2,
+          "status": "warn",
+          "summary": "No robots.txt found.",
+          "details": [],
+          "fix": "Publish robots.txt with explicit groups for the AI crawlers you allow or refuse."
+        },
+        {
+          "id": "sitemap",
+          "title": "Pages are discoverable",
+          "weight": 1,
+          "status": "warn",
+          "summary": "No sitemap found.",
+          "details": [],
+          "fix": "Publish a sitemap and reference it from robots.txt."
+        },
+        {
+          "id": "llms-txt",
+          "title": "llms.txt summary",
+          "weight": 1,
+          "status": "warn",
+          "summary": "No /llms.txt.",
+          "details": [],
+          "fix": "Optional: publish /llms.txt, a short Markdown guide to your site for language models (proposal at llmstxt.org)."
+        },
+        {
+          "id": "agent-policy",
+          "title": "Published agent policy",
+          "weight": 0,
+          "status": "info",
+          "summary": "No /.well-known/agent-policy.json (optional, experimental format served by agent-doorman).",
+          "details": []
+        }
+      ]
+    },
+    {
+      "id": "readability",
+      "title": "Can agents read your pages",
+      "weight": 20,
+      "score": 29,
+      "checks": [
+        {
+          "id": "lang",
+          "title": "Language is declared",
+          "weight": 1,
+          "status": "warn",
+          "summary": "2 page(s) lack <html lang>.",
+          "details": [
+            "/",
+            "/signup"
+          ],
+          "fix": "Set <html lang=\"...\"> so agents pick the right language model behaviour and locale."
+        },
+        {
+          "id": "title-description",
+          "title": "Title and description",
+          "weight": 1,
+          "status": "warn",
+          "summary": "2 page(s) miss a title or meta description.",
+          "details": [
+            "/",
+            "/signup"
+          ],
+          "fix": "Give every page a specific <title> and <meta name=\"description\">."
+        },
+        {
+          "id": "structured-data",
+          "title": "Structured data",
+          "weight": 2,
+          "status": "warn",
+          "summary": "No JSON-LD found on audited pages.",
+          "details": [],
+          "fix": "Add schema.org JSON-LD (Organization, Product with offers, BreadcrumbList...) so agents read facts instead of guessing from layout."
+        },
+        {
+          "id": "server-rendered",
+          "title": "Content without JavaScript",
+          "weight": 3,
+          "status": "fail",
+          "summary": "2 page(s) show little or no text before JavaScript runs.",
+          "details": [
+            "/: 0 characters, asks to enable JavaScript",
+            "/signup: 14 characters"
+          ],
+          "fix": "Server-render (or pre-render) key content. Agents that fetch HTML without running scripts see an empty shell."
+        }
+      ]
+    },
+    {
+      "id": "forms",
+      "title": "Can agents fill in your forms",
+      "weight": 20,
+      "score": 6,
+      "checks": [
+        {
+          "id": "labels",
+          "title": "Every field has a label",
+          "weight": 3,
+          "status": "fail",
+          "summary": "0/4 fields have a label or accessible name.",
+          "details": [
+            "Placeholder only: email, phone, first_name"
+          ],
+          "fix": "Use <label for>, a wrapping <label> or aria-label. Placeholders vanish when typing and many agents ignore them."
+        },
+        {
+          "id": "autocomplete",
+          "title": "Fields say what they are",
+          "weight": 3,
+          "status": "fail",
+          "summary": "0/4 identity, contact, address and payment fields carry an autocomplete token.",
+          "details": [
+            "email (email)",
+            "phone (tel)",
+            "first_name (name)",
+            "password (password, autocomplete=\"off\")"
+          ],
+          "fix": "Add autocomplete tokens (email, tel, given-name, street-address, postal-code, cc-number, current-password...). They tell agents and password managers exactly what each field wants."
+        },
+        {
+          "id": "buttons",
+          "title": "Buttons are named",
+          "weight": 2,
+          "status": "fail",
+          "summary": "0/1 buttons have a text or accessible name.",
+          "details": [],
+          "fix": "Give icon-only buttons an aria-label that says what they do (\"Add to cart\", not \"button\")."
+        },
+        {
+          "id": "input-types",
+          "title": "Inputs use specific types",
+          "weight": 1,
+          "status": "warn",
+          "summary": "0/2 email/phone fields use type=\"email\"/\"tel\".",
+          "details": [
+            "email is type=\"text\"",
+            "phone is type=\"text\""
+          ],
+          "fix": "Use type=\"email\" and type=\"tel\" so agents format and validate input correctly."
+        }
+      ]
+    },
+    {
+      "id": "walls",
+      "title": "Walls in the way",
+      "weight": 10,
+      "score": 88,
+      "checks": [
+        {
+          "id": "browser-reachable",
+          "title": "Browser-like visits get through",
+          "weight": 3,
+          "status": "pass",
+          "summary": "Plain browser requests reached every audited page.",
+          "details": []
+        },
+        {
+          "id": "captcha",
+          "title": "No CAPTCHA in the way",
+          "weight": 1,
+          "status": "warn",
+          "summary": "Challenge technology found on audited pages: reCAPTCHA.",
+          "details": [],
+          "fix": "Keep challenges for suspicious traffic and let verified agents skip them; otherwise legitimate agents stall at this step."
+        }
+      ]
+    }
+  ],
+  "probes": [
+    {
+      "path": "/",
+      "visitor": "browser",
+      "label": "Browser",
+      "status": 200,
+      "ms": 11,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false
+    },
+    {
+      "path": "/",
+      "visitor": "script",
+      "label": "Script (python-requests)",
+      "status": 403,
+      "ms": 2,
+      "verdict": "turned_away",
+      "machineReadable": false,
+      "acceptSignature": false,
+      "concern": {
+        "level": "warn",
+        "note": "refused with no reason an agent can read"
+      }
+    },
+    {
+      "path": "/",
+      "visitor": "claimed",
+      "label": "Claims GPTBot, no proof",
+      "status": 200,
+      "ms": 2,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false,
+      "concern": {
+        "level": "fail",
+        "note": "got in on a claim alone"
+      }
+    },
+    {
+      "path": "/",
+      "visitor": "claimed",
+      "label": "Claims ClaudeBot, no proof",
+      "status": 200,
+      "ms": 0,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false,
+      "concern": {
+        "level": "fail",
+        "note": "got in on a claim alone"
+      }
+    },
+    {
+      "path": "/",
+      "visitor": "claimed",
+      "label": "Claims PerplexityBot, no proof",
+      "status": 200,
+      "ms": 1,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false,
+      "concern": {
+        "level": "fail",
+        "note": "got in on a claim alone"
+      }
+    },
+    {
+      "path": "/",
+      "visitor": "claimed",
+      "label": "Claims ChatGPT-User, no proof",
+      "status": 200,
+      "ms": 2,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false,
+      "concern": {
+        "level": "fail",
+        "note": "got in on a claim alone"
+      }
+    },
+    {
+      "path": "/",
+      "visitor": "claimed",
+      "label": "Claims meta-externalagent, no proof",
+      "status": 200,
+      "ms": 2,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false,
+      "concern": {
+        "level": "fail",
+        "note": "got in on a claim alone"
+      }
+    },
+    {
+      "path": "/",
+      "visitor": "forged",
+      "label": "Claims GPTBot, fake signature",
+      "status": 200,
+      "ms": 2,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false
+    },
+    {
+      "path": "/signup",
+      "visitor": "browser",
+      "label": "Browser",
+      "status": 200,
+      "ms": 2,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false
+    },
+    {
+      "path": "/signup",
+      "visitor": "script",
+      "label": "Script (python-requests)",
+      "status": 403,
+      "ms": 2,
+      "verdict": "turned_away",
+      "machineReadable": false,
+      "acceptSignature": false,
+      "concern": {
+        "level": "warn",
+        "note": "refused with no reason an agent can read"
+      }
+    },
+    {
+      "path": "/signup",
+      "visitor": "claimed",
+      "label": "Claims GPTBot, no proof",
+      "status": 200,
+      "ms": 2,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false,
+      "concern": {
+        "level": "fail",
+        "note": "got in on a claim alone"
+      }
+    },
+    {
+      "path": "/signup",
+      "visitor": "claimed",
+      "label": "Claims ClaudeBot, no proof",
+      "status": 200,
+      "ms": 2,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false,
+      "concern": {
+        "level": "fail",
+        "note": "got in on a claim alone"
+      }
+    },
+    {
+      "path": "/signup",
+      "visitor": "forged",
+      "label": "Claims GPTBot, fake signature",
+      "status": 200,
+      "ms": 2,
+      "verdict": "admitted",
+      "machineReadable": false,
+      "acceptSignature": false
+    }
+  ],
+  "pages": [
+    {
+      "url": "https://naive-shop.example/",
+      "status": 200,
+      "textLength": 0,
+      "forms": 0,
+      "fields": 0
+    },
+    {
+      "url": "https://naive-shop.example/signup",
+      "status": 200,
+      "textLength": 14,
+      "forms": 1,
+      "fields": 4
+    }
+  ],
+  "fixes": [
+    {
+      "check": "ua-allowlist",
+      "category": "Who gets in",
+      "status": "fail",
+      "title": "Agent claims are not trusted blindly",
+      "fix": "Stop allowlisting by User-Agent. Admit named agents only when their Web Bot Auth signature verifies (agent-doorman verifies signatures; many CDNs can too)."
+    },
+    {
+      "check": "server-rendered",
+      "category": "Can agents read your pages",
+      "status": "fail",
+      "title": "Content without JavaScript",
+      "fix": "Server-render (or pre-render) key content. Agents that fetch HTML without running scripts see an empty shell."
+    },
+    {
+      "check": "labels",
+      "category": "Can agents fill in your forms",
+      "status": "fail",
+      "title": "Every field has a label",
+      "fix": "Use <label for>, a wrapping <label> or aria-label. Placeholders vanish when typing and many agents ignore them."
+    },
+    {
+      "check": "autocomplete",
+      "category": "Can agents fill in your forms",
+      "status": "fail",
+      "title": "Fields say what they are",
+      "fix": "Add autocomplete tokens (email, tel, given-name, street-address, postal-code, cc-number, current-password...). They tell agents and password managers exactly what each field wants."
+    },
+    {
+      "check": "buttons",
+      "category": "Can agents fill in your forms",
+      "status": "fail",
+      "title": "Buttons are named",
+      "fix": "Give icon-only buttons an aria-label that says what they do (\"Add to cart\", not \"button\")."
+    },
+    {
+      "check": "forged-signature",
+      "category": "Who gets in",
+      "status": "warn",
+      "title": "Fake signatures buy nothing",
+      "fix": "Verify Web Bot Auth signatures so you can tell real agents from impostors, and require verification on transactional paths."
+    },
+    {
+      "check": "sensitive-paths",
+      "category": "Who gets in",
+      "status": "warn",
+      "title": "Transactional pages need proof",
+      "fix": "Require a browser or a verified agent on cart, checkout and account paths (see the ecommerce preset). The audit only sends GET requests, so this is a signal, not proof that actions are possible."
+    },
+    {
+      "check": "readable-refusals",
+      "category": "Who gets in",
+      "status": "fail",
+      "title": "Refusals explain themselves",
+      "fix": "Answer refused agents with a JSON body and an Accept-Signature header (Web Bot Auth §4.3) or Retry-After, not an HTML wall."
+    },
+    {
+      "check": "structured-data",
+      "category": "Can agents read your pages",
+      "status": "warn",
+      "title": "Structured data",
+      "fix": "Add schema.org JSON-LD (Organization, Product with offers, BreadcrumbList...) so agents read facts instead of guessing from layout."
+    },
+    {
+      "check": "robots",
+      "category": "Can agents find your rules",
+      "status": "warn",
+      "title": "robots.txt states an agent policy",
+      "fix": "Publish robots.txt with explicit groups for the AI crawlers you allow or refuse."
+    },
+    {
+      "check": "lang",
+      "category": "Can agents read your pages",
+      "status": "warn",
+      "title": "Language is declared",
+      "fix": "Set <html lang=\"...\"> so agents pick the right language model behaviour and locale."
+    },
+    {
+      "check": "title-description",
+      "category": "Can agents read your pages",
+      "status": "warn",
+      "title": "Title and description",
+      "fix": "Give every page a specific <title> and <meta name=\"description\">."
+    },
+    {
+      "check": "input-types",
+      "category": "Can agents fill in your forms",
+      "status": "warn",
+      "title": "Inputs use specific types",
+      "fix": "Use type=\"email\" and type=\"tel\" so agents format and validate input correctly."
+    },
+    {
+      "check": "sitemap",
+      "category": "Can agents find your rules",
+      "status": "warn",
+      "title": "Pages are discoverable",
+      "fix": "Publish a sitemap and reference it from robots.txt."
+    },
+    {
+      "check": "llms-txt",
+      "category": "Can agents find your rules",
+      "status": "warn",
+      "title": "llms.txt summary",
+      "fix": "Optional: publish /llms.txt, a short Markdown guide to your site for language models (proposal at llmstxt.org)."
+    },
+    {
+      "check": "captcha",
+      "category": "Walls in the way",
+      "status": "warn",
+      "title": "No CAPTCHA in the way",
+      "fix": "Keep challenges for suspicious traffic and let verified agents skip them; otherwise legitimate agents stall at this step."
+    }
+  ],
+  "notes": [
+    "Agents that present themselves as an ordinary browser and do not sign requests look like people. Neither this audit nor User-Agent rules can tell them apart; signatures are what make agents distinguishable.",
+    "Pages were read as raw HTML without running JavaScript."
+  ]
+}
