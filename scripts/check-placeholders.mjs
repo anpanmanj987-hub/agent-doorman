@@ -5,13 +5,11 @@ import { join } from "node:path";
 
 const TOKENS = ["__OWNER__", "__AUTHOR__", "__SECURITY_EMAIL__"];
 const SKIP = new Set(["node_modules", "dist", ".git", "scripts"]);
-// This checklist names the placeholders on purpose; never rewrite or flag it.
-const SKIP_FILES = new Set(["PUBLISHING.ja.md"]);
 const hits = [];
 
 function walk(dir) {
   for (const name of readdirSync(dir)) {
-    if (SKIP.has(name) || SKIP_FILES.has(name)) continue;
+    if (SKIP.has(name)) continue;
     const p = join(dir, name);
     const st = statSync(p);
     if (st.isDirectory()) walk(p);
@@ -27,7 +25,6 @@ function walk(dir) {
 walk(process.cwd());
 if (hits.length) {
   console.error(`Replace these placeholders before publishing:\n${hits.map((h) => `  ${h}`).join("\n")}`);
-  console.error('\nTip: node scripts/set-owner.mjs <github-owner> "<Author Name>" <security@email>');
   process.exit(1);
 }
 console.log("No placeholders left.");

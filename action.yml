@@ -60,8 +60,9 @@ runs:
         node "$ACTION_ROOT/dist/cli/main.js" "${args[@]}"
         status=$?
         if [ -f "$report" ]; then
-          echo "score=$(node -p "require('$report').score")" >> "$GITHUB_OUTPUT"
-          echo "verdict=$(node -p "require('$report').verdict")" >> "$GITHUB_OUTPUT"
+          # Pass the path through the environment: Windows runner paths contain backslashes.
+          echo "score=$(REPORT="$report" node -p "require(process.env.REPORT).score")" >> "$GITHUB_OUTPUT"
+          echo "verdict=$(REPORT="$report" node -p "require(process.env.REPORT).verdict")" >> "$GITHUB_OUTPUT"
           echo "report=$report" >> "$GITHUB_OUTPUT"
         fi
         exit $status

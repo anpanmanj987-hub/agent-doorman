@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- GitHub Action: read the report through an environment variable instead of splicing its path into JavaScript, which broke on Windows runners (backslashes in `RUNNER_TEMP`).
+- README: install and try straight from the GitHub release URL (`npx --yes --package=<release tgz>`); state that `verified` identifies the signer rather than implying trust, and note the DNS-rebinding window in `nodeHostGuard`; cite DataDome's figure precisely.
+- Remove the pre-publication checklist and the one-shot owner script, which were only for the initial release.
+- Checked on Windows 11 with Node 24: typecheck and all 91 tests pass, and the release tarball installs and runs from its URL.
+
 ## 0.1.0 — 2026-10-05
 
 First public version.

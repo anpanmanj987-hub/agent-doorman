@@ -1,16 +1,19 @@
 # agent-doorman
 
-> GitHub release: download `agent-doorman-0.1.0.tgz` from [Releases](https://github.com/anpanmanj987-hub/agent-doorman/releases) and run `npm install ./agent-doorman-0.1.0.tgz`. Then use `npx --no-install agent-doorman ...`. GitHub publication does not publish to npm. The GitHub Action builds the source at its selected Git ref.
-
+[![ci](https://github.com/anpanmanj987-hub/agent-doorman/actions/workflows/ci.yml/badge.svg)](https://github.com/anpanmanj987-hub/agent-doorman/actions/workflows/ci.yml)
+[![license](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+![node >= 20](https://img.shields.io/badge/node-%3E%3D20-339933)
+![zero dependencies](https://img.shields.io/badge/runtime%20deps-0-brightgreen)
 
 **Check AI agents at the door.** Find out how your site treats AI agent traffic, then let
 verified agents in and keep impostors out, with zero runtime dependencies.
 
-[![ci](https://github.com/anpanmanj987-hub/agent-doorman/actions/workflows/ci.yml/badge.svg)](https://github.com/anpanmanj987-hub/agent-doorman/actions/workflows/ci.yml)
-[![license](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+[日本語 README](README.ja.md)
+
+Try it without installing anything (Node.js 20 or newer):
 
 ```sh
-npx --no-install agent-doorman audit https://your-site.example --path /checkout
+npx --yes --package=https://github.com/anpanmanj987-hub/agent-doorman/releases/download/v0.1.0/agent-doorman-0.1.0.tgz   agent-doorman audit https://your-site.example --path /checkout
 ```
 
 ![A door report: a site that refuses scripts but admits anything claiming to be GPTBot](docs/images/door-report.png)
@@ -21,8 +24,8 @@ Personal agents now book, sign in and check out on people's behalf. Sites are re
 the tool they have, User-Agent rules, and that tool fails both ways:
 
 - **Impostors get in.** A User-Agent is a claim. If your bot rules let `GPTBot` through,
-  anyone who types `GPTBot` gets through. Bot-management vendors report that most sites they
-  tested admit spoofed agent identities without a challenge
+  anyone who types `GPTBot` gets through. In DataDome's tests, 7 in 10 sites let a spoofed AI
+  agent or crawler through without a challenge
   ([DataDome](https://datadome.co/threat-research/meta-muse-doesnt-declare-itself-heres-why-that-matters/)).
 - **Real agents get stuck, or blocked wholesale.** Agents that drive a real browser and do not
   identify themselves look like people. Amazon blocked Meta's Muse agent, saying it browsed
@@ -42,6 +45,17 @@ that, plus an audit that shows where you stand.
 | Gate middleware | Verifies Web Bot Auth signatures, sorts every request into six trust classes and applies a per-path policy: let anyone browse, require a person or a verified agent at checkout. Monitor first, enforce when ready. |
 | Runs anywhere | Node.js (`node:http`, Express, Connect) and every Fetch API runtime (Cloudflare Workers, Next.js middleware, Deno, Bun). No runtime dependencies. |
 | Standards-exact | Passes the Web Bot Auth draft's Ed25519 test vectors; the signer reproduces the published signatures byte for byte. |
+
+## Install
+
+agent-doorman is not on the npm registry yet. Install it from the GitHub release:
+
+```sh
+npm install https://github.com/anpanmanj987-hub/agent-doorman/releases/download/v0.1.0/agent-doorman-0.1.0.tgz
+```
+
+The commands below then run as `npx --no-install agent-doorman ...` (`--no-install` makes sure
+npx never fetches a different package of the same name).
 
 ## Audit your site
 
@@ -70,7 +84,6 @@ guarded one score 100.
 ## Protect your site
 
 ```sh
-npm install ./agent-doorman-0.1.0.tgz
 npx --no-install agent-doorman init --preset ecommerce    # writes agent-policy.json in monitor mode
 ```
 
@@ -186,8 +199,14 @@ await fetch(url, { headers });
   forms.
 - Rate limits and nonce stores are in memory, per process or isolate. Plug in your own
   `RateLimitStore` and `NonceStore` for global limits.
+- `verified` proves which origin signed a request, not that you should trust it: anyone can
+  publish a key directory. To admit only agents you know, pass their keys in `verify.keys`
+  with `directory: false`, or check `trust.signatureAgent` against your own allowlist.
 - Signatures on key directory responses are not verified yet (the directory is fetched over
   HTTPS from the agent's declared origin).
+- `nodeHostGuard` refuses names that resolve to private addresses, but `fetch` resolves the
+  name again, so a DNS-rebinding host could still race it. Route directory fetches through an
+  egress proxy if that matters to you.
 - The list of claimed-agent tokens needs upkeep as vendors change them. Search-engine crawlers
   are deliberately not on it.
 
